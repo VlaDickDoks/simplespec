@@ -10,7 +10,7 @@ FPS = 12
 QUALITY = 100
 
 # Камера создаётся один раз при старте
-camera = dxcam.create()
+camera = dxcam.create(output_color="RGB")
 
 def gen_frames():
     buf = io.BytesIO()
@@ -22,8 +22,8 @@ def gen_frames():
             time.sleep(delay)
             continue
         # dxcam отдаёт BGR — меняем на RGB
-        rgb = frame[:, :, ::-1]
-        im = Image.fromarray(rgb)
+        rgb = frame
+        im = Image.fromarray(frame)
         buf.seek(0); buf.truncate()
         im.save(buf, format="JPEG", quality=QUALITY)
         yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n"
