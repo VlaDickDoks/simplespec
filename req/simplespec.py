@@ -1,6 +1,7 @@
 # screen_server.py — один файл, зум работает в браузере
 from flask import Flask, Response
-import mss, io, time
+import dxcam
+import io, time
 from PIL import Image
 
 app = Flask(__name__)
@@ -8,22 +9,28 @@ app = Flask(__name__)
 FPS = 12
 QUALITY = 100
 
+# Камера создаётся один раз при старте
+camera = dxcam.create()
+
 def gen_frames():
-    with mss.mss() as sct:
-        monitor = sct.monitors[1]
-        buf = io.BytesIO()
-        delay = 1.0 / FPS
-        while True:
-            t0 = time.perf_counter()
-            img = sct.grab(monitor)
-            im = Image.frombytes("RGB", img.size, img.rgb)
-            buf.seek(0); buf.truncate()
-            im.save(buf, format="JPEG", quality=QUALITY)
-            yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n"
-                   + buf.getvalue() + b"\r\n")
-            dt = time.perf_counter() - t0
-            if dt < delay:
-                time.sleep(delay - dt)
+    buf = io.BytesIO()
+    delay = 1.0 / FPS
+    while True:
+        t0 = time.perf_counter()
+        frame = camera.grab()
+        if frame is None:
+            time.sleep(delay)
+            continue
+        # dxcam отдаёт BGR — меняем на RGB
+        rgb = frame[:, :, ::-1]
+        im = Image.fromarray(rgb)
+        buf.seek(0); buf.truncate()
+        im.save(buf, format="JPEG", quality=QUALITY)
+        yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n"
+               + buf.getvalue() + b"\r\n")
+        dt = time.perf_counter() - t0
+        if dt < delay:
+            time.sleep(delay - dt)
 
 @app.route("/")
 def index():
