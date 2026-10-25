@@ -70,8 +70,26 @@ def index():
 <head>
 <meta charset="utf-8">
 <style>
-  #wrap { overflow: hidden; cursor: grab; width: 100%; }
-  #screen { display: block; width: 100%; transform-origin: 0 0; }
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  #wrap {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #screen {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    transform-origin: 0 0;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
 </style>
 </head>
 <body>
@@ -81,9 +99,25 @@ def index():
 <script src="https://unpkg.com/@panzoom/panzoom@4.6.2/dist/panzoom.min.js"></script>
 <script>
   const wrap = document.getElementById('wrap');
-  const img = document.getElementById('screen');
-  const pz = Panzoom(img, { maxScale: 5, minScale: 1, cursor: 'grab' });
-  wrap.addEventListener('wheel', pz.zoomWithWheel, { passive: false });
+  const img  = document.getElementById('screen');
+  let pz = null;
+
+  function initPZ() {
+    if (pz) return;
+    pz = Panzoom(img, {
+      maxScale: 5,
+      minScale: 1,
+      cursor: 'grab',
+      contain: 'outside'
+    });
+    wrap.addEventListener('wheel', pz.zoomWithWheel, { passive: false });
+  }
+
+  if (img.complete && img.naturalWidth) {
+    initPZ();
+  } else {
+    img.addEventListener('load', initPZ, { once: true });
+  }
 </script>
 </body>
 </html>
