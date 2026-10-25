@@ -5,7 +5,17 @@ cd /d "%~dp0"
 echo === Проверка Python ===
 where python >nul 2>&1
 if errorlevel 1 (
-    echo [ОШИБКА] Python не найден в PATH. Установи Python и добавь его в PATH.
+    echo [ОШИБКА] Python не найден в PATH. 
+    echo Установи Python с официального сайта и ОБЯЗАТЕЛЬНО поставь галочку "Add python.exe to PATH".
+    pause
+    exit /b 1
+)
+
+echo === Проверка версии Python ===
+python --version
+if errorlevel 1 (
+    echo [ОШИБКА] Команда python есть, но она не работает. Возможно, это заглушка из Microsoft Store.
+    echo Отключи псевдонимы выполнения приложений для python.exe в настройках Windows.
     pause
     exit /b 1
 )
@@ -15,6 +25,7 @@ if not exist ".venv" (
     python -m venv .venv
     if errorlevel 1 (
         echo [ОШИБКА] Не удалось создать venv.
+        echo Попроси проверить, установлен ли модуль venv (в некоторых сборках Linux/Windows его нет по умолчанию).
         pause
         exit /b 1
     )
@@ -38,6 +49,7 @@ python -m pip install flask mss pillow
 
 if errorlevel 1 (
     echo [ОШИБКА] Установка зависимостей провалилась.
+    echo Возможно, нет доступа к интернету или заблокирован PyPI.
     pause
     exit /b 1
 )
