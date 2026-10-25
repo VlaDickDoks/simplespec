@@ -31,10 +31,10 @@ if errorlevel 1 (
 )
 
 echo === Обновление pip ===
-python -m pip install --upgrade pip
+python -m pip install --upgrade pip --index-url https://mirror.yandex.ru/pypi/simple/
 
 echo === Установка зависимостей ===
-python -m pip install flask dxcam pillow numpy
+python -m pip install flask dxcam pillow numpy opencv-python --index-url https://mirror.yandex.ru/pypi/simple/
 
 if errorlevel 1 (
     echo [ОШИБКА] Установка зависимостей провалилась.
