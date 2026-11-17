@@ -24,7 +24,8 @@ HOST          = cfg.get("server", "host")
 PORT          = cfg.getint("server", "port")
 OUTPUT_COLOR  = cfg.get("capture", "output_color")
 # ------------------------
-
+if not PASSWORD_HASH:
+    raise SystemExit("вы используете дефолтный пароль сгенерируйте новый через generate_hash.bat и вставьте в config.ini")
 app = Flask(__name__)
 auth = HTTPBasicAuth()
 
