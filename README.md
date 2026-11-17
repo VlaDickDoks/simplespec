@@ -57,7 +57,7 @@ fps = 12
 quality = 85
 
 [server]
-host = 0.0.0.0
+host = 127.0.0.1
 port = 1488
 
 [capture]
@@ -79,8 +79,6 @@ generate_hash.bat
 ```
 
 Enter the new password and the script prints a hash. Copy it into `config.ini` under `password_hash`.
-
-Note: `generate_hash.bat` looks for `.venv` in the **project root**, while `install_deps.bat` creates it at **`req\.venv`**. If hash generation fails, either create a venv in the root (`python -m venv .venv`) or edit the path in the batch file to point at `req\.venv`.
 
 ## Updating
 
